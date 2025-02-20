@@ -1,9 +1,11 @@
 ﻿using JStraining.DbConnection;
 using JStraining.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JStraining.Controllers
 {
+    [Authorize]
     public class UserListController : Controller
     {
         public readonly AppDbContext db;
@@ -11,14 +13,10 @@ namespace JStraining.Controllers
         {
             db = _db;
         }
-        [HttpGet]
+        [HttpGet]     
         public IActionResult Index()
         {
             int? userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-            if (userId == 0) 
-            {
-                return RedirectToAction("Login","Users");
-            }
             var items = db.userLists.Where(x=> x.UserID == userId).ToList();
             return View(items);
         }
